@@ -1,9 +1,9 @@
 """
-    calc_average_plaquette(param, Us::Array{ComplexF64})
+    calc_average_plaquette(param, Us::Array{ComplexF64, 5})
 
-Calculate average plaquette for U(1) gauge fields.
+Calculate average plaquette for U(1) gauge fields in 4 dimension.
 """
-function calc_average_plaquette(param, Us::Array{ComplexF64})
+function calc_average_plaquette(param, Us::Array{ComplexF64, 5})
     @unpack Nsite = param
     
     δ(μ, ν) = kronecker_delta(μ, ν)
@@ -26,11 +26,11 @@ function calc_average_plaquette(param, Us::Array{ComplexF64})
 end
 
 """
-    calc_average_plaquette(param, Us::Array{SU2})
+    calc_average_plaquette(param, Us::Array{SU2, 5})
 
-Calculate average plaquette for SU(2) gauge fields.
+Calculate average plaquette for SU(2) gauge fields in 4 dimension.
 """
-function calc_average_plaquette(param, Us::Array{SU2})
+function calc_average_plaquette(param, Us::Array{SU2, 5})
     @unpack Nsite = param
     
     δ(μ, ν) = kronecker_delta(μ, ν)
@@ -52,7 +52,41 @@ function calc_average_plaquette(param, Us::Array{SU2})
     return P
 end
 
-function calc_wilson_loop(param, Us::Array{SU2}, I, J)
+
+"""
+    calc_average_plaquette(param, Us::Array{SU2, 6})
+
+Calculate average plaquette for SU(2) gauge fields in 5 dimension.
+"""
+function calc_average_plaquette(param, Us::Array{SU2, 6})
+    @unpack Nsite = param
+    
+    δ(μ, ν) = kronecker_delta(μ, ν)
+    
+    f(n) = check_boundary(n, Nsite)
+    
+    P = 0.0
+    
+    for ν in 1:5, μ in 1:ν-1, n₅ in 1:Nsite, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
+        U₁ = Us[n₁, n₂, n₃, n₄, n₅, μ]
+        U₂ = Us[f(n₁+δ(1,μ)), f(n₂+δ(2,μ)), f(n₃+δ(3,μ)), f(n₄+δ(4,μ)), f(n₅+δ(5,μ)), ν]
+        U₃ = conj(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), f(n₃+δ(3,ν)), f(n₄+δ(4,ν)), f(n₅+δ(5,ν)), μ])
+        U₄ = conj(Us[n₁, n₂, n₃, n₄, n₅, ν])
+        U = U₁*U₂*U₃*U₄
+        P += 1 - trace(U)/2
+    end
+    
+    P /= 10*Nsite^5
+    return P
+end
+
+
+"""
+    calc_wilson_loop(param, Us::Array{SU2, 5}, I, J)
+
+Calculate wilson loop for SU(2) gauge fields in 4 dimension.
+"""
+function calc_wilson_loop(param, Us::Array{SU2, 5}, I, J)
     @unpack Nsite = param
     
     δ(μ, ν) = kronecker_delta(μ, ν)
