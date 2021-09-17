@@ -1,11 +1,13 @@
 module LatticeGauge
 
 using Plots
+using StaticArrays
 using LinearAlgebra
 using Parameters 
 using Statistics 
 
 include("./SU2.jl")
+include("./SU3.jl")
 include("./initialize.jl")
 include("./heatbath.jl")
 include("./observables.jl")
