@@ -79,9 +79,12 @@ function main!(Us, param, βs)
         ΔPs_random[iβ] = ΔP
     end
 
-    group = :SU2 
-    if typeof(Us) == Array{ComplexF64, dim+1} 
-        group = :U1
+    group = :U1 
+    if typeof(Us) == Array{SU2, dim+1} 
+        group = :SU2
+    end
+    if typeof(Us) == Array{SU3, dim+1}
+        group = :SU3 
     end
 
     result = (dim=dim, βs=βs, 
@@ -112,22 +115,28 @@ function plot_result(result; xlog=true, yerr=false, save_figure=false, figure_na
 
 
     function f(x)
-        if group === :SU2 
-            return ifelse(x<3.5, 1-x/4, NaN)
-        end
         if group === :U1
-            return ifelse(x<1.5, 1-x/2, NaN)
+            return ifelse(x<1.5, 1-x/2 , NaN)
+        end
+        if group === :SU2 
+            return ifelse(x<3.5, 1-x/4 , NaN)
+        end
+        if group === :SU3 
+            return ifelse(x<6.0, 1-x/18, NaN)
         end
         return NaN
     end
     plot!(p, βs, f.(βs), label=false, line=:black)
 
     function g(x)
+        if group === :U1
+            return ifelse(x>0.5, 1/(dim*x),  NaN)
+        end
         if group === :SU2 
             return ifelse(x>0.8, 3/(dim*x),  NaN)
         end
-        if group === :U1
-            return ifelse(x>0.5, 1/(dim*x),  NaN)
+        if group === :SU3
+            return ifelse(x>5.0, 8/(dim*x), NaN)
         end
         return NaN
     end

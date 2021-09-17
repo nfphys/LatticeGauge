@@ -1,3 +1,19 @@
+function calc_plaquette(Us, n₁, n₂, n₃, n₄, μ, ν)
+    Nsite = size(Us, 1)
+
+    δ(μ, ν) = kronecker_delta(μ, ν)
+    
+    f(n) = check_boundary(n, Nsite)
+
+    U₁ = Us[n₁, n₂, n₃, n₄, μ]
+    U₂ = Us[f(n₁+δ(1,μ)), f(n₂+δ(2,μ)), f(n₃+δ(3,μ)), f(n₄+δ(4,μ)), ν]
+    U₃ = conj(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), f(n₃+δ(3,ν)), f(n₄+δ(4,ν)), μ])
+    U₄ = conj(Us[n₁, n₂, n₃, n₄, ν])
+
+    U = U₁*U₂*U₃*U₄
+end
+
+
 """
     calc_average_plaquette(param, Us::Array{ComplexF64, 5})
 
@@ -6,21 +22,11 @@ Calculate average plaquette for U(1) gauge fields in 4 dimension.
 function calc_average_plaquette(param, Us::Array{ComplexF64, 5})
     @unpack Nsite = param
     
-    δ(μ, ν) = kronecker_delta(μ, ν)
-    
-    f(n) = check_boundary(n, Nsite)
-    
     P = 0.0
-    
     for ν in 1:4, μ in 1:ν-1, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
-        U₁ = Us[n₁, n₂, n₃, n₄, μ]
-        U₂ = Us[f(n₁+δ(1,μ)), f(n₂+δ(2,μ)), f(n₃+δ(3,μ)), f(n₄+δ(4,μ)), ν]
-        U₃ = conj(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), f(n₃+δ(3,ν)), f(n₄+δ(4,ν)), μ])
-        U₄ = conj(Us[n₁, n₂, n₃, n₄, ν])
-        U = U₁*U₂*U₃*U₄
+        U = calc_plaquette(Us, n₁, n₂, n₃, n₄, μ, ν)
         P += 1 - real(U)
     end
-    
     P /= 6*Nsite^4
     return P
 end
@@ -33,24 +39,32 @@ Calculate average plaquette for SU(2) gauge fields in 4 dimension.
 function calc_average_plaquette(param, Us::Array{SU2, 5})
     @unpack Nsite = param
     
-    δ(μ, ν) = kronecker_delta(μ, ν)
-    
-    f(n) = check_boundary(n, Nsite)
-    
     P = 0.0
-    
     for ν in 1:4, μ in 1:ν-1, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
-        U₁ = Us[n₁, n₂, n₃, n₄, μ]
-        U₂ = Us[f(n₁+δ(1,μ)), f(n₂+δ(2,μ)), f(n₃+δ(3,μ)), f(n₄+δ(4,μ)), ν]
-        U₃ = conj(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), f(n₃+δ(3,ν)), f(n₄+δ(4,ν)), μ])
-        U₄ = conj(Us[n₁, n₂, n₃, n₄, ν])
-        U = U₁*U₂*U₃*U₄
+        U = calc_plaquette(Us, n₁, n₂, n₃, n₄, μ, ν)
         P += 1 - trace(U)/2
     end
-    
     P /= 6*Nsite^4
     return P
 end
+
+"""
+    calc_average_plaquette(param, Us::Array{SU3, 5})
+
+Calculate average plaquette for SU(3) gauge fields in 4 dimension.
+"""
+function calc_average_plaquette(param, Us::Array{SU3, 5})
+    @unpack Nsite = param
+    
+    P = 0.0
+    for ν in 1:4, μ in 1:ν-1, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
+        U = calc_plaquette(Us, n₁, n₂, n₃, n₄, μ, ν)
+        P += 1 - real(tr(U))/3
+    end
+    P /= 6*Nsite^4
+    return P
+end
+
 
 
 """

@@ -112,7 +112,24 @@ end
 Generate a new link for SU(3).
 """
 function generate_new_link(U_staple::SU3, U_old::SU3, β)
-    
+    U₀ = U_old
+
+    r₁ = matrix_to_SU2(submatrix(U₀*U_staple, 1))
+    α₁ = generate_new_link(r₁, β)
+    a₁ = convert_SU2_to_SU3(α₁, 1)
+    U₁ = a₁*U₀
+
+    r₂ = matrix_to_SU2(submatrix(U₁*U_staple, 2))
+    α₂ = generate_new_link(r₂, β)
+    a₂ = convert_SU2_to_SU3(α₂, 2)
+    U₂ = a₂*U₁
+
+    r₃ = matrix_to_SU2(submatrix(U₂*U_staple, 3))
+    α₃ = generate_new_link(r₃, β)
+    a₃ = convert_SU2_to_SU3(α₃, 3)
+    U₃ = a₃*U₂
+
+    U_new = U₃
 end
 
 
@@ -203,6 +220,7 @@ function heatbath!(Us::Array{SU3, 5}, param, β)
         U_zero = SU3_zero()
         U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, μ)
 
-        Us[n₁, n₂, n₃, n₄, μ] = generate_new_link(U_staple, β)
+        U_old = Us[n₁, n₂, n₃, n₄, μ]
+        Us[n₁, n₂, n₃, n₄, μ] = generate_new_link(U_staple, U_old, β)
     end 
 end

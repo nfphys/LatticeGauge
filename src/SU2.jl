@@ -6,9 +6,9 @@ import Base.conj
 export SU2
 
 """
-    SU2{T<:Real}
+    SU2
 
-type of an element of the group SU(2).
+type of an element of SU(2).
 """
 struct SU2
     a₀::Float64
@@ -49,3 +49,4 @@ abs(U::SU2) = sqrt(abs2(U))
 conj(U::SU2) = SU2(U.a₀, -U.a₁, -U.a₂, -U.a₃)
 
 trace(U::SU2) = 2U.a₀
+

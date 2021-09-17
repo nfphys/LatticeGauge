@@ -1,4 +1,6 @@
 
+export SU3
+
 """
 alias of SMatrix{3,3,ComplexF64, 9}.
 """
@@ -73,3 +75,24 @@ function submatrix(U::SU3, k)
     return SA[1.0+0.0im 0.0+0.0im;
               0.0+0.0im 1.0+0.0im]
 end
+
+"""
+    matrix_to_SU2(U)
+
+Construct an element of SU(2) up to real factor from a general 2×2 matrix.
+"""
+function matrix_to_SU2(U) 
+    a = U[1,1]
+    b = U[1,2]
+    c = U[2,1]
+    d = U[2,2]
+
+    a₀ = real(0.5(a + d))
+    a₃ = imag(0.5(a - d))
+
+    a₁ = imag(0.5(b + c))
+    a₂ = real(0.5(b - c))
+
+    SU2(a₀, a₁, a₂, a₃)
+end
+
