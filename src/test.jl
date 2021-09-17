@@ -15,7 +15,7 @@ end
 
 
 
-function test_thermalization!(Us, param; β=1.0, Nthermal=100)
+function test_thermalization!(Us, param; β=1.0, Nthermal=100, NOR=0)
     @unpack Nsite = param
     
     #ordered start
@@ -26,6 +26,9 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100)
     
     @time for isweep in 1:Nthermal
         heatbath!(Us, param, β)
+        for iOR in 1:NOR
+            overrelaxation!(Us, param, β)
+        end
         Ps_ordered[isweep] = calc_average_plaquette(param, Us)
         if isweep === 1
             Ps_average_ordered[isweep] = Ps_ordered[isweep]
@@ -43,6 +46,9 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100)
     
     @time for isweep in 1:Nthermal
         heatbath!(Us, param, β)
+        for iOR in 1:NOR
+            overrelaxation!(Us, param, β)
+        end
         Ps_random[isweep] = calc_average_plaquette(param, Us)
         if isweep === 1
             Ps_average_random[isweep] = Ps_random[isweep]
