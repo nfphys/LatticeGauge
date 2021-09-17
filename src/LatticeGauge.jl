@@ -20,23 +20,29 @@ export measure_observables!
     Nsite::Int64 = 4 
     Nthermal::Int64 = 100
     Nsweep::Int64 = 100
-    β::Float64 = 1.0
+    NOR::Int64 = 4
 end
 
 function measure_observables!(Us, param, β; random=false)
-    @unpack Nsite, Nthermal, Nsweep = param 
+    @unpack Nsite, Nthermal, Nsweep, NOR = param 
 
     initialize_gaugefields!(Us, param; random=random)
 
     # thermalization
     for isweep in 1:Nthermal
         heatbath!(Us, param, β)
+        for iOR in 1:NOR
+            overrelaxation!(Us, param, β)
+        end
     end
     
     # measurement
     Ps = zeros(Float64, Nsweep)
     for isweep in 1:Nthermal
         heatbath!(Us, param, β)
+        for iOR in 1:NOR
+            overrelaxation!(Us, param, β)
+        end
         Ps[isweep] = calc_average_plaquette(param, Us)
     end
     

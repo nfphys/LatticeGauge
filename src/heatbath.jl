@@ -207,6 +207,7 @@ end
 
 
 
+
 """ 
     heatbath!(Us::Array{SU3, 5}, param, β)
 
@@ -215,6 +216,47 @@ Update SU(3) gauge fields by heat bath method in 4 dimension.
 function heatbath!(Us::Array{SU3, 5}, param, β)
     @unpack Nsite = param 
     
+    for μ in 1:4, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
+        
+        U_zero = SU3_zero()
+        U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, μ)
+
+        U_old = Us[n₁, n₂, n₃, n₄, μ]
+        Us[n₁, n₂, n₃, n₄, μ] = generate_new_link(U_staple, U_old, β)
+    end 
+end
+
+
+
+"""
+    overrelaxation!(Us::Array{SU2, 5}, param, β)
+
+Update SU(2) gauge fields by overrelaxation method in 4 dimension.
+"""
+function overrelaxation!(Us::Array{SU2, 5}, param, β)
+    @unpack Nsite = param 
+
+    for μ in 1:4, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
+        
+        U_zero = SU2(0,0,0,0)
+        U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, μ)
+
+        V₀ = U_staple/abs(U_staple)
+
+        U_old = Us[n₁, n₂, n₃, n₄, μ]
+        Us[n₁, n₂, n₃, n₄, μ] = V₀*U_old*conj(V₀)
+    end 
+end
+
+
+"""
+    overrelaxation!(Us::Array{SU3, 5}, param, β)
+
+Update SU(3) gauge fields by overrelaxation method in 4 dimension.
+"""
+function overrelaxation!(Us::Array{SU3, 5}, param, β)
+    @unpack Nsite = param 
+
     for μ in 1:4, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
         
         U_zero = SU3_zero()
