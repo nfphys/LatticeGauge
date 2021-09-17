@@ -138,7 +138,7 @@ end
 
 
 """
-    generate_new_link(U_staple::SU3, β) 
+    generate_new_link(U_staple::SU3, U_old::SU3, β) 
 
 Generate a new link for SU(3).
 """
@@ -146,17 +146,17 @@ function generate_new_link(U_staple::SU3, U_old::SU3, β)
     U₀ = U_old
 
     r₁ = matrix_to_SU2(submatrix(U₀*U_staple, 1))
-    α₁ = generate_new_link(r₁, β)
+    α₁ = generate_new_link(r₁, 2β/3)
     a₁ = convert_SU2_to_SU3(α₁, 1)
     U₁ = a₁*U₀
 
     r₂ = matrix_to_SU2(submatrix(U₁*U_staple, 2))
-    α₂ = generate_new_link(r₂, β)
+    α₂ = generate_new_link(r₂, 2β/3)
     a₂ = convert_SU2_to_SU3(α₂, 2)
     U₂ = a₂*U₁
 
     r₃ = matrix_to_SU2(submatrix(U₂*U_staple, 3))
-    α₃ = generate_new_link(r₃, β)
+    α₃ = generate_new_link(r₃, 2β/3)
     a₃ = convert_SU2_to_SU3(α₃, 3)
     U₃ = a₃*U₂
 
@@ -210,10 +210,6 @@ Update SU(2) gauge fields by heat bath method in 5 dimension.
 """
 function heatbath!(Us::Array{SU2, 6}, param, β)
     @unpack Nsite = param 
-
-    δ(μ, ν) = kronecker_delta(μ, ν)
-    
-    f(n) = check_boundary(n, Nsite)
     
     for μ in 1:5, n₅ in 1:Nsite, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
         
@@ -304,14 +300,5 @@ end
 Update SU(3) gauge fields by overrelaxation method in 4 dimension.
 """
 function overrelaxation!(Us::Array{SU3, 5}, param, β)
-    @unpack Nsite = param 
-
-    for μ in 1:4, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
-        
-        U_zero = SU3_zero()
-        U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, μ)
-
-        U_old = Us[n₁, n₂, n₃, n₄, μ]
-        Us[n₁, n₂, n₃, n₄, μ] = generate_new_link(U_staple, U_old, β)
-    end 
+    return
 end

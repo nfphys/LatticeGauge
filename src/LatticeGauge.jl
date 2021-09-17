@@ -103,13 +103,16 @@ function main!(Us, param, βs)
     return result 
 end
 
-function plot_result(result; xlog=true, yerr=false, save_figure=false, figure_name="result")
+function plot_result(result; xlog=true, ylog=true, yerr=false, save_figure=false, figure_name="result")
     @unpack dim, βs, group, Ps_ordered, ΔPs_ordered, Ps_random, ΔPs_random = result 
 
     # plot average plaquette
-    p = plot(xlabel="β", yaxis=:log, ylabel="P", legend=:bottomleft)
+    p = plot(xlabel="β", ylabel="P", legend=:bottomleft)
     if xlog 
-        plot!(xaxis=:log)
+        plot!(p, xaxis=:log)
+    end
+    if ylog 
+        plot!(p, yaxis=:log)
     end
     if yerr
         plot!(p, βs, Ps_ordered; yerr=ΔPs_ordered, marker=:dot, line=false, label="ordered start")
@@ -119,7 +122,6 @@ function plot_result(result; xlog=true, yerr=false, save_figure=false, figure_na
         plot!(p, βs, Ps_random; marker=:dot, line=false, label="random start")
     end
 
-
     function f(x)
         if group === :U1
             return ifelse(x<1.5, 1-x/2 , NaN)
@@ -128,7 +130,7 @@ function plot_result(result; xlog=true, yerr=false, save_figure=false, figure_na
             return ifelse(x<3.5, 1-x/4 , NaN)
         end
         if group === :SU3 
-            return ifelse(x<6.0, 1-x/18, NaN)
+            return ifelse(x<6.0, 1-x/18-x*x/216, NaN)
         end
         return NaN
     end
@@ -151,6 +153,7 @@ function plot_result(result; xlog=true, yerr=false, save_figure=false, figure_na
         savefig("LatticeGauge_figure/average_plaquette_" * figure_name * ".png")
     end
     display(p)
+
 
     # plot plaquette fluctuation
     p = plot(xlabel="β", ylabel="ΔP", legend=:bottomleft)

@@ -13,6 +13,28 @@ function test_initialize_gaugefields()
     @time initialize_gaugefields!(Us_SU3, param; random=true)
 end
 
+function test_calc_average_plaquette()
+    param = PhysicalParam()
+    @unpack dim, Nsite = param 
+
+    Us_U1 = ones(ComplexF64, Nsite, Nsite, Nsite, Nsite, 4)
+    @time initialize_gaugefields!(Us_U1, param; random=true)
+    @time P_U1 = calc_average_plaquette(param, Us_U1)
+    @show P_U1
+
+    Us_SU2 = Array{SU2}(undef, Nsite, Nsite, Nsite, Nsite, 4)
+    @time initialize_gaugefields!(Us_SU2, param; random=true)
+    @time P_SU2 = calc_average_plaquette(param, Us_SU2)
+    @show P_SU2
+
+    Us_SU3 = Array{SU3}(undef, Nsite, Nsite, Nsite, Nsite, 4)
+    @time initialize_gaugefields!(Us_SU3, param; random=true)
+    @time P_SU3 = calc_average_plaquette(param, Us_SU3)
+    @show P_SU3
+
+    return 
+end
+
 
 
 function test_thermalization!(Us, param; β=1.0, Nthermal=100, NOR=0)
