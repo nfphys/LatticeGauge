@@ -9,7 +9,9 @@ using Statistics
 include("./SU2.jl")
 include("./SU3.jl")
 include("./initialize.jl")
+include("./staple.jl")
 include("./heatbath.jl")
+include("./overrelaxation.jl")
 include("./observables.jl")
 include("./test.jl")
 
