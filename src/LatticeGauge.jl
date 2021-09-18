@@ -11,6 +11,7 @@ include("./SU3.jl")
 include("./initialize.jl")
 include("./staple.jl")
 include("./heatbath.jl")
+include("./metropolis.jl")
 include("./overrelaxation.jl")
 include("./observables.jl")
 include("./test.jl")
@@ -20,30 +21,54 @@ export measure_observables!
 @with_kw struct PhysicalParam 
     dim::Int64 = 4
     Nsite::Int64 = 4 
+
     Nthermal::Int64 = 100
     Nsweep::Int64 = 100
+
+    do_OR::Bool = false
     NOR::Int64 = 4
+
+    Nhit::Int64 = 10
+
+    method::Symbol = :heatbath 
+    @assert method === :heatbath || method === :metropolis
 end
 
 function measure_observables!(Us, param, β; random=false)
-    @unpack Nsite, Nthermal, Nsweep, NOR = param 
+    @unpack Nsite, Nthermal, Nsweep, do_OR, NOR, method = param 
 
     initialize_gaugefields!(Us, param; random=random)
 
     # thermalization
     for isweep in 1:Nthermal
-        heatbath!(Us, param, β)
-        for iOR in 1:NOR
-            overrelaxation!(Us, param, β)
+        if method === :heatbath
+            heatbath!(Us, param, β)
+        end 
+        if method === :metropolis 
+            metropolis!(Us, param, β)
+        end
+
+        if do_OR
+            for iOR in 1:NOR
+                overrelaxation!(Us, param, β)
+            end
         end
     end
     
     # measurement
     Ps = zeros(Float64, Nsweep)
     for isweep in 1:Nthermal
-        heatbath!(Us, param, β)
-        for iOR in 1:NOR
-            overrelaxation!(Us, param, β)
+        if method === :heatbath
+            heatbath!(Us, param, β)
+        end 
+        if method === :metropolis 
+            metropolis!(Us, param, β)
+        end
+
+        if do_OR
+            for iOR in 1:NOR
+                overrelaxation!(Us, param, β)
+            end
         end
         Ps[isweep] = calc_average_plaquette(param, Us)
     end

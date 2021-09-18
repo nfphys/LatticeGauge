@@ -38,7 +38,7 @@ end
 
 
 function test_thermalization!(Us, param; β=1.0, Nthermal=100, NOR=0)
-    @unpack Nsite = param
+    @unpack Nsite, method, do_OR = param
     
     #ordered start
     initialize_gaugefields!(Us, param)
@@ -47,9 +47,17 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100, NOR=0)
     Ps_average_ordered = zeros(Float64, Nthermal)
     
     @time for isweep in 1:Nthermal
-        heatbath!(Us, param, β)
-        for iOR in 1:NOR
-            overrelaxation!(Us, param, β)
+        if method === :heatbath
+            heatbath!(Us, param, β)
+        end 
+        if method === :metropolis 
+            metropolis!(Us, param, β)
+        end
+        
+        if do_OR
+            for iOR in 1:NOR
+                overrelaxation!(Us, param, β)
+            end
         end
         Ps_ordered[isweep] = calc_average_plaquette(param, Us)
         if isweep === 1
@@ -67,9 +75,17 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100, NOR=0)
     Ps_average_random = zeros(Float64, Nthermal)
     
     @time for isweep in 1:Nthermal
-        heatbath!(Us, param, β)
-        for iOR in 1:NOR
-            overrelaxation!(Us, param, β)
+        if method === :heatbath
+            heatbath!(Us, param, β)
+        end 
+        if method === :metropolis 
+            metropolis!(Us, param, β)
+        end
+
+        if do_OR
+            for iOR in 1:NOR
+                overrelaxation!(Us, param, β)
+            end
         end
         Ps_random[isweep] = calc_average_plaquette(param, Us)
         if isweep === 1
