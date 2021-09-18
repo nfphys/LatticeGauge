@@ -1,4 +1,5 @@
 import Base.+
+import Base.-
 import Base.*
 import Base./
 import Base.conj
@@ -36,6 +37,15 @@ function +(U::SU2, V::SU2)
     a₁ = U.a₁ + V.a₁
     a₂ = U.a₂ + V.a₂
     a₃ = U.a₃ + V.a₃
+    
+    SU2(a₀, a₁, a₂, a₃)
+end
+
+function -(U::SU2, V::SU2)
+    a₀ = U.a₀ - V.a₀
+    a₁ = U.a₁ - V.a₁
+    a₂ = U.a₂ - V.a₂
+    a₃ = U.a₃ - V.a₃
     
     SU2(a₀, a₁, a₂, a₃)
 end
