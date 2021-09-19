@@ -83,24 +83,16 @@ end
 Generate a new link for SU(3).
 """
 function generate_new_link(U_staple::SU3, U_old::SU3, β)
-    U₀ = U_old
+    U = U_old
 
-    r₁ = matrix_to_SU2(submatrix(U₀*U_staple, 1))
-    α₁ = generate_new_link(r₁, SU2(1), 2β/3)
-    a₁ = convert_SU2_to_SU3(α₁, 1)
-    U₁ = a₁*U₀
+    for i in 1:3
+        r = project_onto_SU2(submatrix(U*U_staple, i))
+        α = generate_new_link(r, SU2(1), 2β/3)
+        a = convert_SU2_to_SU3(α, i)
+        U = a*U
+    end
 
-    r₂ = matrix_to_SU2(submatrix(U₁*U_staple, 2))
-    α₂ = generate_new_link(r₂, SU2(1), 2β/3)
-    a₂ = convert_SU2_to_SU3(α₂, 2)
-    U₂ = a₂*U₁
-
-    r₃ = matrix_to_SU2(submatrix(U₂*U_staple, 3))
-    α₃ = generate_new_link(r₃, SU2(1), 2β/3)
-    a₃ = convert_SU2_to_SU3(α₃, 3)
-    U₃ = a₃*U₂
-
-    U_new = U₃
+    return U
 end
 
 
