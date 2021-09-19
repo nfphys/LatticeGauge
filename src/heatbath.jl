@@ -16,11 +16,11 @@ end
 
 
 """
-    generate_new_link(U_staple::ComplexF64, β) 
+    generate_new_link(U_staple::U1, U_old::U1, β) 
 
 Generate a new link for U(1).
 """
-function generate_new_link(U_staple::ComplexF64, β)
+function generate_new_link(U_staple::U1, U_old::U1, β)
     k = Base.abs(U_staple)
         
     accept = false
@@ -40,11 +40,11 @@ end
 
 
 """
-    generate_new_link(U_staple::SU2, β) 
+    generate_new_link(U_staple::SU2, U_old::SU2, β) 
 
 Generate a new link for SU(2).
 """
-function generate_new_link(U_staple::SU2, β)
+function generate_new_link(U_staple::SU2, U_old::SU2, β)
     k = abs(U_staple) 
         
     accept = false
@@ -86,17 +86,17 @@ function generate_new_link(U_staple::SU3, U_old::SU3, β)
     U₀ = U_old
 
     r₁ = matrix_to_SU2(submatrix(U₀*U_staple, 1))
-    α₁ = generate_new_link(r₁, 2β/3)
+    α₁ = generate_new_link(r₁, SU2(1), 2β/3)
     a₁ = convert_SU2_to_SU3(α₁, 1)
     U₁ = a₁*U₀
 
     r₂ = matrix_to_SU2(submatrix(U₁*U_staple, 2))
-    α₂ = generate_new_link(r₂, 2β/3)
+    α₂ = generate_new_link(r₂, SU2(1), 2β/3)
     a₂ = convert_SU2_to_SU3(α₂, 2)
     U₂ = a₂*U₁
 
     r₃ = matrix_to_SU2(submatrix(U₂*U_staple, 3))
-    α₃ = generate_new_link(r₃, 2β/3)
+    α₃ = generate_new_link(r₃, SU2(1), 2β/3)
     a₃ = convert_SU2_to_SU3(α₃, 3)
     U₃ = a₃*U₂
 
@@ -106,136 +106,54 @@ end
 
 
 
-
-
-
 """
-    heatbath!(Us::Array{ComplexF64, 3}, param, β)
+    heatbath!(Us::Array{T, 3}, param, β) where T
 
-Update U(1) gauge fields by heat bath method in 2 dimension.
+Update gauge fields by heat bath method in 2 dimension.
 """
-function heatbath!(Us::Array{ComplexF64, 3}, param, β)
-    @unpack Nsite = param 
+function heatbath!(Us::Array{T, 3}, param, β) where T
+    @unpack Nsite, U_zero = param 
     
     for μ in 1:2, n₂ in 1:Nsite, n₁ in 1:Nsite
-        
-        U_zero = 0.0 + 0.0im
         U_staple = calc_staple(U_zero, Us, n₁, n₂, μ)
-        
-        Us[n₁, n₂, μ] = generate_new_link(U_staple, β)
-    end
-end
-
-"""
-    heatbath!(Us::Array{ComplexF64, 5}, param, β)
-
-Update U(1) gauge fields by heat bath method in 4 dimension.
-"""
-function heatbath!(Us::Array{ComplexF64, 5}, param, β)
-    @unpack Nsite = param 
-    
-    for μ in 1:4, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
-        
-        U_zero = 0.0 + 0.0im
-        U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, μ)
-        
-        Us[n₁, n₂, n₃, n₄, μ] = generate_new_link(U_staple, β)
-    end
-end
-
-
-
-"""
-    heatbath!(Us::Array{SU2, 3}, param, β)
-
-Update SU(2) gauge fields by heat bath method in 2 dimension.
-"""
-function heatbath!(Us::Array{SU2, 3}, param, β)
-    @unpack Nsite = param 
-    
-    for μ in 1:2, n₂ in 1:Nsite, n₁ in 1:Nsite
-        
-        U_zero = SU2(0,0,0,0)
-        U_staple = calc_staple(U_zero, Us, n₁, n₂, μ)
-
-        Us[n₁, n₂, μ] = generate_new_link(U_staple, β)
-    end 
-end
-
-
-"""
-    heatbath!(Us::Array{SU2, 5}, param, β)
-
-Update SU(2) gauge fields by heat bath method in 4 dimension.
-"""
-function heatbath!(Us::Array{SU2, 5}, param, β)
-    @unpack Nsite = param 
-    
-    for μ in 1:4, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
-        
-        U_zero = SU2(0,0,0,0)
-        U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, μ)
-
-        Us[n₁, n₂, n₃, n₄, μ] = generate_new_link(U_staple, β)
-    end 
-end
-
-
-
-"""
-    heatbath!(Us::Array{SU2, 6}, param, β)
-
-Update SU(2) gauge fields by heat bath method in 5 dimension.
-"""
-function heatbath!(Us::Array{SU2, 6}, param, β)
-    @unpack Nsite = param 
-    
-    for μ in 1:5, n₅ in 1:Nsite, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
-        
-        U_zero = SU2(0,0,0,0)
-        U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, n₅, μ)
-        
-        Us[n₁, n₂, n₃, n₄, n₅, μ] = generate_new_link(U_staple, β)
-    end 
-end
-
-
-""" 
-    heatbath!(Us::Array{SU3, 3}, param, β)
-
-Update SU(3) gauge fields by heat bath method in 2 dimension.
-"""
-function heatbath!(Us::Array{SU3, 3}, param, β)
-    @unpack Nsite = param 
-    
-    for μ in 1:2, n₂ in 1:Nsite, n₁ in 1:Nsite
-        
-        U_zero = SU3_zero()
-        U_staple = calc_staple(U_zero, Us, n₁, n₂, μ)
-
         U_old = Us[n₁, n₂, μ]
         Us[n₁, n₂, μ] = generate_new_link(U_staple, U_old, β)
-    end 
+    end
 end
 
 
-""" 
-    heatbath!(Us::Array{SU3, 5}, param, β)
-
-Update SU(3) gauge fields by heat bath method in 4 dimension.
 """
-function heatbath!(Us::Array{SU3, 5}, param, β)
-    @unpack Nsite = param 
+    heatbath!(Us::Array{T, 5}, param, β) where T
+
+Update gauge fields by heat bath method in 4 dimension.
+"""
+function heatbath!(Us::Array{T, 5}, param, β) where T
+    @unpack Nsite, U_zero = param 
     
     for μ in 1:4, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
-        
-        U_zero = SU3_zero()
         U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, μ)
-
         U_old = Us[n₁, n₂, n₃, n₄, μ]
         Us[n₁, n₂, n₃, n₄, μ] = generate_new_link(U_staple, U_old, β)
     end 
 end
+
+
+"""
+    heatbath!(Us::Array{T, 6}, param, β) where T
+
+Update gauge fields by heat bath method in 5 dimension.
+"""
+function heatbath!(Us::Array{T, 6}, param, β) where T
+    @unpack Nsite, U_zero = param 
+    
+    for μ in 1:5, n₅ in 1:Nsite, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
+        U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, n₅, μ)
+        U_old = Us[n₁, n₂, n₃, n₄, n₅, μ]
+        Us[n₁, n₂, n₃, n₄, n₅, μ] = generate_new_link(U_staple, U_old, β)
+    end 
+end
+
+
 
 
 

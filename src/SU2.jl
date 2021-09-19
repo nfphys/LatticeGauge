@@ -7,7 +7,7 @@ import Base.abs
 import Base.abs2
 import LinearAlgebra.tr
 
-export SU2
+export SU2, SU2_zero
 
 """
     SU2
@@ -20,6 +20,9 @@ struct SU2
     a₂::Float64 
     a₃::Float64 
 end
+
+SU2(x) = SU2(x,0,0,0)
+SU2_zero() = SU2(0, 0, 0, 0)
 
 
 function *(U::SU2, V::SU2)
@@ -64,3 +67,33 @@ conj(U::SU2) = SU2(U.a₀, -U.a₁, -U.a₂, -U.a₃)
 
 tr(U::SU2) = 2U.a₀
 
+
+"""
+    rand_SU2()
+
+Generate an element of SU(2) randomly.
+"""
+function rand_SU2()
+    a₀ = 0.0 
+    accept = false
+    while(!accept)
+        a₀ = 2*rand() - 1 # [-1,1] の一様乱数
+        p  =   rand()     # [0, 1] の一様乱数
+        if p ≤ sqrt(1 - a₀^2)
+            accept = true
+            break
+        end
+    end
+
+    cosθ = 2*rand() - 1 # [-1,1] の一様乱数
+    sinθ = sqrt(1 - cosθ^2)
+    
+    ϕ = 2π*rand() # [0, 2π] の一様乱数
+
+    a = sqrt(1 - a₀^2)
+    a₁ = a*sinθ*cos(ϕ)
+    a₂ = a*sinθ*sin(ϕ)
+    a₃ = a*cosθ
+    
+    U = SU2(a₀, a₁, a₂, a₃)
+end

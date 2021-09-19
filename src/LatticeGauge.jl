@@ -1,5 +1,6 @@
 module LatticeGauge
 
+using Plots: use_local_dependencies
 using Plots
 using StaticArrays
 using LinearAlgebra
@@ -19,7 +20,7 @@ include("./test.jl")
 
 export measure_observables!
 
-@with_kw struct PhysicalParam 
+@with_kw struct PhysicalParam{T} 
     dim::Int64 = 4
     Nsite::Int64 = 4 
 
@@ -33,6 +34,8 @@ export measure_observables!
 
     method::Symbol = :heatbath 
     @assert method === :heatbath || method === :metropolis
+
+    U_zero::T = SU2_zero()
 end
 
 function measure_observables!(Us, param, β; random=false)

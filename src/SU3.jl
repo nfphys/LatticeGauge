@@ -1,5 +1,5 @@
 
-export SU3
+export SU3, SU3_zero
 
 """
 alias of SMatrix{3,3,ComplexF64, 9}.
@@ -23,6 +23,7 @@ Return zero-matrix of the same size with SU(3).
 SU3_zero() = SA[0.0+0.0im  0.0+0.0im  0.0+0.0im;
                 0.0+0.0im  0.0+0.0im  0.0+0.0im;
                 0.0+0.0im  0.0+0.0im  0.0+0.0im]
+
 
 
 """
@@ -94,5 +95,19 @@ function matrix_to_SU2(U)
     a₂ = real(0.5(b - c))
 
     SU2(a₀, a₁, a₂, a₃)
+end
+
+
+
+"""
+    rand_SU3()
+
+Generate an element of SU(3) randomly.
+"""
+function rand_SU3()
+    U₁ = convert_SU2_to_SU3(rand_SU2(), 1)
+    U₂ = convert_SU2_to_SU3(rand_SU2(), 2)
+    U₃ = convert_SU2_to_SU3(rand_SU2(), 3)
+    return U₃*U₂*U₁
 end
 
