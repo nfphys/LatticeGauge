@@ -3,6 +3,9 @@ import Base.-
 import Base.*
 import Base./
 import Base.conj
+import Base.abs
+import Base.abs2
+import LinearAlgebra.tr
 
 export SU2
 
@@ -17,6 +20,7 @@ struct SU2
     a₂::Float64 
     a₃::Float64 
 end
+
 
 function *(U::SU2, V::SU2)
     a₀ = U.a₀*V.a₀ - (U.a₁*V.a₁ + U.a₂*V.a₂ + U.a₃*V.a₃)
@@ -58,5 +62,5 @@ abs(U::SU2) = sqrt(abs2(U))
 
 conj(U::SU2) = SU2(U.a₀, -U.a₁, -U.a₂, -U.a₃)
 
-trace(U::SU2) = 2U.a₀
+tr(U::SU2) = 2U.a₀
 
