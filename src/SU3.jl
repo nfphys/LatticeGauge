@@ -20,9 +20,7 @@ SU3_identity() = SA[1.0+0.0im  0.0+0.0im  0.0+0.0im;
 
 Return zero-matrix of the same size with SU(3).
 """                
-SU3_zero() = SA[0.0+0.0im  0.0+0.0im  0.0+0.0im;
-                0.0+0.0im  0.0+0.0im  0.0+0.0im;
-                0.0+0.0im  0.0+0.0im  0.0+0.0im]
+SU3_zero() = zeros(SMatrix{3,3, ComplexF64})
 
 
 
@@ -51,7 +49,6 @@ function convert_SU2_to_SU3(U::SU2, k)
                   0 1 0;
                   b 0 a]
     end
-    return SU3_identity()
 end
 
 
@@ -73,16 +70,14 @@ function submatrix(U::SU3, k)
         return SA[U[3,3] U[3,1];
                   U[1,3] U[1,1]]
     end
-    return SA[1.0+0.0im 0.0+0.0im;
-              0.0+0.0im 1.0+0.0im]
 end
 
 """
-    matrix_to_SU2(U)
+    project_onto_SU2(U)
 
-Construct an element of SU(2) up to real factor from a general 2×2 matrix.
+Project a general 2×2 matrix onto SU(2) up to normalization.
 """
-function matrix_to_SU2(U) 
+function project_onto_SU2(U) 
     a = U[1,1]
     b = U[1,2]
     c = U[2,1]
