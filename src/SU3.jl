@@ -106,3 +106,24 @@ function rand_SU3()
     return U₃*U₂*U₁
 end
 
+
+function gram_schmidt(U::SU3)
+    Nc = 3
+
+    v₁ = U[:,1]
+    v₂ = U[:,2]
+    v₃ = U[:,3]
+
+    v₁ /= norm(v₁)
+    
+    v₂  = v₂ - v₁*(v₁'v₂)
+    v₂ /= norm(v₂)
+
+    v₃  = v₃ - v₁*(v₁'v₃) - v₂*(v₂'v₃)
+    v₃ /= norm(v₃)
+        
+    return SA[v₁[1] v₂[1] v₃[1];
+              v₁[2] v₂[2] v₃[2];
+              v₁[3] v₂[3] v₃[3]]
+end
+

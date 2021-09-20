@@ -21,7 +21,7 @@ end
 Generate a new link for U(1).
 """
 function generate_new_link(U_staple::U1, U_old::U1, β)
-    k = Base.abs(U_staple)
+    k = abs(U_staple)
         
     accept = false
     B = 0.0
@@ -39,12 +39,7 @@ function generate_new_link(U_staple::U1, U_old::U1, β)
 end
 
 
-"""
-    generate_new_link(U_staple::SU2, U_old::SU2, β) 
-
-Generate a new link for SU(2).
-"""
-function generate_new_link(U_staple::SU2, U_old::SU2, β)
+function SU2_update(U_staple::SU2, β)
     k = abs(U_staple) 
         
     accept = false
@@ -77,6 +72,62 @@ function generate_new_link(U_staple::SU2, U_old::SU2, β)
 end
 
 
+function SU2_update_KP(U_staple::SU2, β)
+    eps = 0.000000000001
+
+    k = abs(U_staple) 
+    α = β*k
+
+    accept = false
+    δ² = 0.0
+    while(!accept)
+        R₁ = rand() + eps 
+        R₂ = rand() + eps 
+
+        X₁ = -log(R₁)/α
+        X₂ = -log(R₂)/α
+
+        R₃ = rand()
+        C = cos(2π*R₃)^2
+        
+        A = X₁*C 
+
+        δ² = X₂ + A 
+
+        R₄ = rand()
+        if R₄^2 > 1 - 0.5*δ²
+            continue 
+        end
+        accept = true
+    end
+    a₀ = 1 - δ²
+
+    cosθ = 2*rand() - 1
+    sinθ = sqrt(1 - cosθ^2)
+    ϕ = 2π*rand()
+
+    a = sqrt(1 - a₀^2)
+    a₁ = a*sinθ*cos(ϕ)
+    a₂ = a*sinθ*sin(ϕ)
+    a₃ = a*cosθ
+    
+    U = SU2(a₀, a₁, a₂, a₃)
+
+    return U*conj(U_staple)/k
+end
+
+
+
+"""
+    generate_new_link(U_staple::SU2, U_old::SU2, β) 
+
+Generate a new link for SU(2).
+"""
+function generate_new_link(U_staple::SU2, U_old::SU2, β)
+    return SU2_update_KP(U_staple, β)
+end
+
+
 """
     generate_new_link(U_staple::SU3, U_old::SU3, β) 
 
@@ -87,12 +138,12 @@ function generate_new_link(U_staple::SU3, U_old::SU3, β)
 
     for i in 1:3
         r = project_onto_SU2(submatrix(U*U_staple, i))
-        α = generate_new_link(r, SU2(1), 2β/3)
+        α = SU2_update_KP(r, 2β/3)
         a = convert_SU2_to_SU3(α, i)
         U = a*U
     end
 
-    return U
+    return gram_schmidt(U)
 end
 
 

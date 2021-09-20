@@ -242,9 +242,9 @@ function metropolis!(Us::Array{SU3, 5}, param, β)
                 h = generate_SU2_near_identity(2β)
                 U_new = convert_SU2_to_SU3(h, k)*U_old
 
+                # Metropolis check 
                 Δ = -β/3 * real(tr((U_new - U_old)*U_staple)) 
                 P = exp(-Δ)
-                # Metropolis check 
                 if P > 1
                     Us[n₁, n₂, n₃, n₄, μ] = U_new 
                 elseif rand() < P 
