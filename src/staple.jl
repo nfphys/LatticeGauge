@@ -1,3 +1,7 @@
+#=
+SU(3)の元 U に対して、conj(U) ≠ inv(U) であることに注意。
+=#
+
 """
     calc_staple(U_zero, Us, n₁, n₂, μ)
 

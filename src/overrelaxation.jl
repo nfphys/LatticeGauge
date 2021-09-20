@@ -80,8 +80,5 @@ function overrelaxation!(Us::Array{SU3, 5}, param, β)
                 Us[n₁, n₂, n₃, n₄, μ] = U_new 
             end
         end
-
-        Us[n₁, n₂, n₃, n₄, μ] = gram_schmidt(Us[n₁, n₂, n₃, n₄, μ])
-
     end
 end
