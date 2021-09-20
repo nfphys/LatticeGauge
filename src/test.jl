@@ -45,8 +45,10 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100)
     
     Ps_ordered = zeros(Float64, Nthermal)
     Ps_average_ordered = zeros(Float64, Nthermal)
+    Ps_ordered[1] = calc_average_plaquette(param, Us)
+    Ps_average_ordered[1] = Ps_ordered[1]
     
-    @time for isweep in 1:Nthermal
+    @time for isweep in 2:Nthermal
         if method === :heatbath
             heatbath!(Us, param, β)
         end 
@@ -61,12 +63,8 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100)
         end
 
         Ps_ordered[isweep] = calc_average_plaquette(param, Us)
-        if isweep === 1
-            Ps_average_ordered[isweep] = Ps_ordered[isweep]
-        else
-            Ps_average_ordered[isweep] = Ps_average_ordered[isweep-1]*(isweep-1) + Ps_ordered[isweep]
-            Ps_average_ordered[isweep] /= isweep
-        end
+        Ps_average_ordered[isweep] = Ps_average_ordered[isweep-1]*(isweep-1) + Ps_ordered[isweep]
+        Ps_average_ordered[isweep] /= isweep
     end
     
     # random start
@@ -74,8 +72,10 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100)
     
     Ps_random = zeros(Float64, Nthermal)
     Ps_average_random = zeros(Float64, Nthermal)
+    Ps_random[1] = calc_average_plaquette(param, Us)
+    Ps_average_random[1] = Ps_random[1]
     
-    @time for isweep in 1:Nthermal
+    @time for isweep in 2:Nthermal
         if method === :heatbath
             heatbath!(Us, param, β)
         end 
@@ -90,12 +90,8 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100)
         end
 
         Ps_random[isweep] = calc_average_plaquette(param, Us)
-        if isweep === 1
-            Ps_average_random[isweep] = Ps_random[isweep]
-        else
-            Ps_average_random[isweep] = Ps_average_random[isweep-1]*(isweep-1) + Ps_random[isweep]
-            Ps_average_random[isweep] /= isweep
-        end
+        Ps_average_random[isweep] = Ps_average_random[isweep-1]*(isweep-1) + Ps_random[isweep]
+        Ps_average_random[isweep] /= isweep
     end
     
     # plot 

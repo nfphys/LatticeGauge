@@ -6,6 +6,7 @@ import Base.conj
 import Base.abs
 import Base.abs2
 import LinearAlgebra.tr
+import LinearAlgebra.inv
 
 export SU2, SU2_zero
 
@@ -64,6 +65,7 @@ end
 abs(U::SU2) = sqrt(abs2(U))
 
 conj(U::SU2) = SU2(U.a₀, -U.a₁, -U.a₂, -U.a₃)
+inv(U::SU2) = conj(U::SU2)/abs(U)
 
 tr(U::SU2) = 2U.a₀
 

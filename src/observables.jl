@@ -12,8 +12,8 @@ function calc_plaquette(Us, n₁, n₂, μ, ν)
 
     U₁ = Us[n₁, n₂, μ]
     U₂ = Us[f(n₁+δ(1,μ)), f(n₂+δ(2,μ)), ν]
-    U₃ = conj(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), μ])
-    U₄ = conj(Us[n₁, n₂, ν])
+    U₃ = inv(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), μ])
+    U₄ = inv(Us[n₁, n₂, ν])
 
     U = U₁*U₂*U₃*U₄
 end
@@ -33,8 +33,8 @@ function calc_plaquette(Us, n₁, n₂, n₃, μ, ν)
 
     U₁ = Us[n₁, n₂, n₃, μ]
     U₂ = Us[f(n₁+δ(1,μ)), f(n₂+δ(2,μ)), f(n₃+δ(3,μ)), ν]
-    U₃ = conj(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), f(n₃+δ(3,ν)), μ])
-    U₄ = conj(Us[n₁, n₂, n₃, ν])
+    U₃ = inv(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), f(n₃+δ(3,ν)), μ])
+    U₄ = inv(Us[n₁, n₂, n₃, ν])
 
     U = U₁*U₂*U₃*U₄
 end
@@ -54,8 +54,8 @@ function calc_plaquette(Us, n₁, n₂, n₃, n₄, μ, ν)
 
     U₁ = Us[n₁, n₂, n₃, n₄, μ]
     U₂ = Us[f(n₁+δ(1,μ)), f(n₂+δ(2,μ)), f(n₃+δ(3,μ)), f(n₄+δ(4,μ)), ν]
-    U₃ = conj(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), f(n₃+δ(3,ν)), f(n₄+δ(4,ν)), μ])
-    U₄ = conj(Us[n₁, n₂, n₃, n₄, ν])
+    U₃ = inv(Us[f(n₁+δ(1,ν)), f(n₂+δ(2,ν)), f(n₃+δ(3,ν)), f(n₄+δ(4,ν)), μ])
+    U₄ = inv(Us[n₁, n₂, n₃, n₄, ν])
 
     U = U₁*U₂*U₃*U₄
 end
@@ -91,7 +91,7 @@ end
 """
     calc_average_plaquette(param, Us::Array{T, 5}) where T
 
-Calculate average plaquette for SU(2) gauge fields in 4 dimension.
+Calculate average plaquette for gauge fields in 4 dimension.
 """
 function calc_average_plaquette(param, Us::Array{T, 5}) where T 
     @unpack Nsite = param
@@ -112,6 +112,8 @@ function calc_average_plaquette(param, Us::Array{T, 5}) where T
     P /= 6*Nsite^4
     return P
 end
+
+
 
 
 """
