@@ -1,11 +1,47 @@
 """
+    overrelaxation!(Us::Array{ComplexF64, 3}, param, β)
+
+Update U(1) gauge fields by overrelaxation method in 2 dimension.
+"""
+function overrelaxation!(Us::Array{ComplexF64, 3}, param, β)
+    @unpack Nsite = param 
+
+    for μ in 1:2, n₂ in 1:Nsite, n₁ in 1:Nsite
+        
+        U_zero = 0.0 + 0.0im
+        U_staple = calc_staple(U_zero, Us, n₁, n₂, μ)
+
+        V₀ = U_staple/abs(U_staple)
+
+        U_old = Us[n₁, n₂, μ]
+        Us[n₁, n₂, μ] = conj(V₀*V₀*U_old)
+    end 
+end
+
+
+
+"""
     overrelaxation!(Us::Array{ComplexF64, 5}, param, β)
 
 Update U(1) gauge fields by overrelaxation method in 4 dimension.
 """
 function overrelaxation!(Us::Array{ComplexF64, 5}, param, β)
-    return
+    @unpack Nsite = param 
+
+    for μ in 1:4, n₄ in 1:Nsite, n₃ in 1:Nsite, n₂ in 1:Nsite, n₁ in 1:Nsite
+        
+        U_zero = 0.0 + 0.0im
+        U_staple = calc_staple(U_zero, Us, n₁, n₂, n₃, n₄, μ)
+
+        V₀ = U_staple/abs(U_staple)
+
+        U_old = Us[n₁, n₂, n₃, n₄, μ]
+        Us[n₁, n₂, n₃, n₄, μ] = conj(V₀*V₀*U_old)
+    end 
 end
+
+
+
 
 
 """
@@ -47,6 +83,9 @@ function overrelaxation!(Us::Array{SU2, 6}, param, β)
         Us[n₁, n₂, n₃, n₄, n₅, μ] = V₀*U_old*conj(V₀)
     end 
 end
+
+
+
 
 
 """

@@ -23,6 +23,7 @@ struct SU2
 end
 
 SU2(x) = SU2(x,0,0,0)
+
 SU2_zero() = SU2(0, 0, 0, 0)
 
 
@@ -65,6 +66,7 @@ end
 abs(U::SU2) = sqrt(abs2(U))
 
 conj(U::SU2) = SU2(U.a₀, -U.a₁, -U.a₂, -U.a₃)
+
 inv(U::SU2) = conj(U::SU2)/abs(U)
 
 tr(U::SU2) = 2U.a₀
@@ -92,7 +94,7 @@ function rand_SU2()
     
     ϕ = 2π*rand() # [0, 2π] の一様乱数
 
-    a = sqrt(1 - a₀^2)
+    a = sqrt(1 - a₀^2) # 3次元ベクトル(a₁, a₂, a₃)のノルム
     a₁ = a*sinθ*cos(ϕ)
     a₂ = a*sinθ*sin(ϕ)
     a₃ = a*cosθ

@@ -60,7 +60,11 @@ function calc_plaquette(Us, n₁, n₂, n₃, n₄, μ, ν)
     U = U₁*U₂*U₃*U₄
 end
 
+"""
+    calc_plaquette(Us, n₁, n₂, n₃, n₄, μ, ν)
 
+Calculate an ordered-product along the plaquette (n, μ, ν) in 5 dimension.
+"""
 function calc_plaquette(Us, n₁, n₂, n₃, n₄, n₅, μ, ν)
     Nsite = size(Us, 1)
 

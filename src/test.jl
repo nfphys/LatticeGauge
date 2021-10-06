@@ -37,7 +37,8 @@ end
 
 
 
-function test_thermalization!(Us, param; β=1.0, Nthermal=100)
+function test_thermalization!(Us, param; β=1.0, Nthermal=30, 
+        save_figure=false, figure_name="")
     @unpack Nsite, method, do_OR, NOR = param
     
     #ordered start
@@ -63,8 +64,15 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100)
         end
 
         Ps_ordered[isweep] = calc_average_plaquette(param, Us)
+        #=
         Ps_average_ordered[isweep] = Ps_average_ordered[isweep-1]*(isweep-1) + Ps_ordered[isweep]
         Ps_average_ordered[isweep] /= isweep
+        =#
+        if isweep < 6
+            @views Ps_average_ordered[isweep] = mean(Ps_ordered[1:isweep])
+        else
+            @views Ps_average_ordered[isweep] = mean(Ps_ordered[isweep-5:isweep])
+        end
     end
     
     # random start
@@ -90,13 +98,23 @@ function test_thermalization!(Us, param; β=1.0, Nthermal=100)
         end
 
         Ps_random[isweep] = calc_average_plaquette(param, Us)
+        #=
         Ps_average_random[isweep] = Ps_average_random[isweep-1]*(isweep-1) + Ps_random[isweep]
         Ps_average_random[isweep] /= isweep
+        =#
+        if isweep < 6
+            @views Ps_average_random[isweep] = mean(Ps_random[1:isweep])
+        else
+            @views Ps_average_random[isweep] = mean(Ps_random[isweep-5:isweep])
+        end
     end
     
     # plot 
     p = plot(xlabel="iteration", ylabel="average plaquette", legend=:bottomright)
     plot!(p, Ps_average_ordered; label="ordered start")
     plot!(p, Ps_average_random; label="random start")
+    if save_figure
+        savefig("LatticeGauge_figure/thermalization_" * figure_name * ".png")
+    end
     display(p)
 end
